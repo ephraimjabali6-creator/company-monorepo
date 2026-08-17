@@ -1,0 +1,13 @@
+{
+  "team": "optimization",
+  "responsibilities": [
+    "Performance profiling and tuning",
+    "Cost optimization across infra and model usage",
+    "Cross-service architectural reviews for efficiency",
+    "Automated benchmarking and regression detection"
+  ],
+  "contacts": {
+    "lead": "optim-lead@example.com",
+    "slack": "#optimization"
+  }
+}
