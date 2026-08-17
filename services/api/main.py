@@ -6,6 +6,12 @@ from pydantic import BaseModel, Field
 from company.selection import build_company_plan
 from services.api.gateway import router as gateway_router, attach_middleware as attach_gateway_middleware
 
+# Prometheus metrics ASGI app
+try:
+    from prometheus_client import make_asgi_app
+except Exception:
+    make_asgi_app = None
+
 app = FastAPI(title="Company Orchestration API")
 
 # register the gateway router (API key, rate limiting) under /gateway
@@ -16,6 +22,10 @@ try:
 except Exception:
     # safe fallback for test environments where redis or other optional deps may be absent
     pass
+
+# mount prometheus metrics if available
+if make_asgi_app is not None:
+    app.mount('/metrics', make_asgi_app())
 
 
 class Product(BaseModel):

@@ -23,14 +23,36 @@ def generate(name: str, root: str = 'projects'):
 
     # FastAPI backend
     backend = os.path.join(base, 'backend')
-    write(os.path.join(backend, 'app.py'), """from fastapi import FastAPI\napp=FastAPI()\n@app.get('/health')\ndef health():\n    return {'status':'ok'}\n""")
-    write(os.path.join(backend, 'requirements.txt'), "fastapi\nuvicorn[standard]\n")
+    write(os.path.join(backend, 'app.py'), """from fastapi import FastAPI
+app=FastAPI()
+
+# Expose a simple health endpoint and prometheus metrics when available
+@app.get('/health')
+def health():
+    return {'status':'ok'}
+
+# optional metrics mounting if prometheus_client is installed
+try:
+    from prometheus_client import make_asgi_app
+    app.mount('/metrics', make_asgi_app())
+except Exception:
+    pass
+""")
+    write(os.path.join(backend, 'requirements.txt'), "fastapi\nuvicorn[standard]\nprometheus_client\n")
     write(os.path.join(backend, 'Dockerfile'), """FROM python:3.10-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install -r requirements.txt\nCOPY . .\nCMD ["uvicorn","app:app","--host","0.0.0.0","--port","8000"]\n""")
 
     # Next.js frontend (minimal)
     frontend = os.path.join(base, 'frontend')
     write(os.path.join(frontend, 'package.json'), """{\n  \"name\": \"nextjs-app\",\n  \"private\": true,\n  \"scripts\": {\n    \"dev\": \"next dev\",\n    \"build\": \"next build\",\n    \"start\": \"next start\"\n  }\n}\n""")
-    write(os.path.join(frontend, 'pages', 'index.js'), """export default function Home(){return <div><h1>Next.js App</h1></div>}""")
+    write(os.path.join(frontend, 'pages', 'index.js'), """import {useEffect, useState} from 'react'
+export default function Home(){
+  const [status, setStatus] = useState('loading')
+  useEffect(()=>{
+    fetch(process.env.NEXT_PUBLIC_BACKEND_URL || '/api').then(r=>r.json()).then(j=>setStatus(j.status||'ok')).catch(()=>setStatus('unreachable'))
+  },[])
+  return <div style={{fontFamily:'sans-serif',padding:20}}><h1>Next.js App</h1><p>Backend status: {status}</p></div>
+}
+""")
     write(os.path.join(frontend, 'Dockerfile'), """FROM node:18-alpine\nWORKDIR /app\nCOPY package.json .\nRUN npm install --silent\nCOPY . .\nCMD ["npm","start"]\n""")
 
     # Top-level README
