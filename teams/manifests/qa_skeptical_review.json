@@ -1,0 +1,10 @@
+{
+  "team": "qa",
+  "subteams": [
+    {"name": "unit", "responsibilities": ["unit tests", "fast regression"]},
+    {"name": "integration", "responsibilities": ["integration tests", "api contracts"]},
+    {"name": "fuzzing", "responsibilities": ["fuzz harnesses", "adversarial inputs"]},
+    {"name": "skeptic", "responsibilities": ["continuous skeptical reviews", "threat modeling", "assumption audits"]}
+  ],
+  "lead": "qa-lead@example.com"
+}

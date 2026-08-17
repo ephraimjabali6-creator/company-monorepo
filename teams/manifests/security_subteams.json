@@ -1,0 +1,11 @@
+{
+  "team": "security_team",
+  "subteams": [
+    {"name": "encryption", "responsibilities": ["key management", "crypto libraries", "side-channel awareness"]},
+    {"name": "cyberops", "responsibilities": ["monitoring", "logging", "incident response"]},
+    {"name": "detection", "responsibilities": ["alerts", "SIEM", "threat hunting"]},
+    {"name": "red-team", "responsibilities": ["adversarial testing", "exploit development"]},
+    {"name": "blue-team", "responsibilities": ["defense engineering", "hardening", "patch orchestration"]}
+  ],
+  "lead": "security-lead@example.com"
+}

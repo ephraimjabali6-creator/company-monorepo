@@ -1,0 +1,5 @@
+# Codeowners for security and core directories
+/.github/** @security-team
+/services/api/** @api-team
+/security/** @security-team
+/company/** @engineering-leads

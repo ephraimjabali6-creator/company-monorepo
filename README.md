@@ -1,20 +1,29 @@
 Polyglot Company Monorepo
 
-This repository is a scaffold for a resilient, security-first, polyglot engineering organization. It includes:
-- services/api: FastAPI (Python) service with tests
-- services/go: Minimal Go microservice
-- apps/web: simple web UI placeholder
-- apps/native: Electron native UI placeholder
-- infra: Docker Compose for local orchestration
-- .github/workflows: CI to run tests across languages
-- teams/: documentation for managers and teams (CEO, CTO, CISO, etc.)
-- security/: blue/red team guidance and automation pointers
-- testing/: testing strategy including red-green regression testing
-- deploy/: environment and deployment best-practices
+This repository is a security-first, multi-team operating system for building product companies and products at scale. It is designed so a client can describe a product and the system selects only the relevant departments, reducing confusion, semantic drift, and coordination overhead.
 
-Next steps:
-1. Install required runtimes (Python 3.10+, Go, Node.js, and optionally Electron tooling).
-2. From repo root, run scripts\run_tests.ps1 to validate the basic services.
-3. Tailor each service to project needs; CI is preconfigured for basic validation.
+Included:
+- `company/`: team registry and department selection logic that picks relevant departments from a project brief.
+- `services/api`: FastAPI orchestrator with `/health`, `/departments`, `/plan`, and `/product` endpoints; includes a dedicated API Department and backend orchestration.
+- `services/go`: lightweight Go service for additional backend capabilities.
+- `apps/dashboard`: browser-based company control center for health checks, plan generation, and external endpoint monitoring.
+- `apps/web`: generic web starter.
+- `apps/native`: Electron native starter.
+- `references/`: public GitHub references cloned for backend, fullstack, desktop app, and security patterns.
+- `infra/`: Docker Compose for local orchestration.
+- `.github/workflows/ci.yml`: CI that runs Python regression tests.
+- `teams/`: department and manager definitions.
+- `security/`: blue team, red team, encryption and secure dev guidance.
+- `testing/`: regression and QA strategy.
+- `deploy/`: environment and deployment guardrails.
 
-This scaffold is intentionally minimal but complete enough to run local validations and be extended into a production-grade multi-team system.
+Core operating principle:
+- The system does not show irrelevant departments for a project. Departments are selected by project type, data sensitivity, compliance needs, ML needs, deployment requirements, and product complexity.
+- Each department is structured with clear ownership boundaries and expected responsibilities.
+- Security, testing, and operational reliability are built in from the beginning.
+
+Validation:
+1. Install Python 3.10+ and Go.
+2. From repo root, run `scripts\run_tests.ps1`.
+3. Start the API with `uvicorn services.api.main:app --reload`.
+4. Open `apps\dashboard\index.html` or serve it locally to review the company dashboard.

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Company Monitor</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Company Control Center</h1>
+      <div class="toolbar">
+        <input id="baseUrl" type="text" value="http://localhost:8000" aria-label="API base URL" />
+        <button id="healthBtn">Check health</button>
+        <button id="planBtn">Generate plan</button>
+      </div>
+    </header>
+    <main>
+      <section class="brief-card">
+        <h2>Project Brief</h2>
+        <textarea id="brief" rows="8">Build a secure fintech web app with AI analytics, a native dashboard, and strong compliance. Must be scalable and deployment-ready.</textarea>
+      </section>
+      <section class="plan-card">
+        <h2>Active Departments</h2>
+        <div id="statusBox">Awaiting API call</div>
+        <ul id="departments"></ul>
+        <h3>Recent Logs</h3>
+        <div id="logs"></div>
+      </section>
+    </main>
+    <script>
+      const departmentsList = document.getElementById('departments');
+      const briefInput = document.getElementById('brief');
+      const baseUrlInput = document.getElementById('baseUrl');
+      const statusBox = document.getElementById('statusBox');
+      const logsEl = document.getElementById('logs');
+
+      async function callHealth() {
+        const baseUrl = baseUrlInput.value.replace(/\/$/, '');
+        statusBox.textContent = 'Checking ' + baseUrl + '/health...';
+        try {
+          const response = await fetch(baseUrl + '/health');
+          const data = await response.json();
+          statusBox.textContent = 'Health OK: ' + JSON.stringify(data);
+        } catch (err) {
+          statusBox.textContent = 'Health check failed: ' + err.message;
+        }
+      }
+
+      async function fetchLogs() {
+        const baseUrl = baseUrlInput.value.replace(/\/$/, '');
+        try {
+          const r = await fetch(baseUrl + '/logs');
+          const j = await r.json();
+          logsEl.innerHTML = '';
+          for (const e of j.logs.slice(0,20)) {
+            const d = document.createElement('div');
+            d.innerText = `[${e.ts}] ${e.team}: ${e.message}`;
+            logsEl.appendChild(d);
+          }
+        } catch (err) {
+          logsEl.innerText = 'Unable to fetch logs: ' + err.message;
+        }
+      }
+
+      async function generatePlan() {
+        const baseUrl = baseUrlInput.value.replace(/\/$/, '');
+        statusBox.textContent = 'Generating plan from ' + baseUrl + '...';
+        try {
+          const response = await fetch(baseUrl + '/plan', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: 'Client Platform',
+              domain: 'fintech',
+              goals: briefInput.value,
+              constraints: 'secure, scalable, deployment-ready',
+              stack: 'fullstack'
+            })
+          });
+          const data = await response.json();
+          departmentsList.innerHTML = '';
+          for (const dept of data.departments) {
+            const li = document.createElement('li');
+            li.innerHTML = `<strong>${dept.title}</strong><small>${dept.scope}</small>`;
+            departmentsList.appendChild(li);
+          }
+          statusBox.textContent = 'Plan generated for ' + data.project + ' (' + data.departments.length + ' departments)';
+          fetchLogs();
+        } catch (err) {
+          statusBox.textContent = 'Plan generation failed: ' + err.message;
+        }
+      }
+
+      document.getElementById('healthBtn').addEventListener('click', callHealth);
+      document.getElementById('planBtn').addEventListener('click', generatePlan);
+      callHealth();
+      generatePlan();
+      setInterval(fetchLogs, 5000);
+    </script>
+  </body>
+</html>

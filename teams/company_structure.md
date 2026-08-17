@@ -16,7 +16,8 @@ Executive Managers:
 Core Engineering & Operations Teams:
 - Optimization Team: cross-cutting team to optimize performance, cost, infra and models.
 - Security Team: Encryption engineering, cyber ops, blue team, red team, secure development.
-- Product Engineering: backend, frontend, native clients, integrations.
+- Product Engineering: backend, frontend, API department, native clients, integrations.
+- API Department: public/private API contracts, auth, rate limiting, gateway design, versioning, service-to-service integration.
 - QA & Testing: functional, regression (red-green), fuzzing, chaos engineering, test automation.
 - DevOps & Env: CI/CD, environment handling, secrets, deployment.
 - Design & Experience: UI/UX, 3D/4D prototyping, visual design.

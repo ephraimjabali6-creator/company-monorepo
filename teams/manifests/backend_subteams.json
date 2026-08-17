@@ -1,0 +1,11 @@
+{
+  "team": "backend_engineering",
+  "subteams": [
+    {"name": "api", "responsibilities": ["API design", "contracts", "versioning", "gateway integration"]},
+    {"name": "data", "responsibilities": ["schema design", "data modeling", "migrations", "warehouse"]},
+    {"name": "infra", "responsibilities": ["hosting", "k8s/containers", "scaling"]},
+    {"name": "cache", "responsibilities": ["caching strategy", "redis/memcached integration"]},
+    {"name": "platform", "responsibilities": ["internal libraries", "sdk", "service-oriented architecture"]}
+  ],
+  "lead": "backend-lead@example.com"
+}
