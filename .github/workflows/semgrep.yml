@@ -1,0 +1,16 @@
+name: Semgrep Scan
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 2 * * *'
+
+jobs:
+  semgrep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: .semgrep.yml

@@ -1,0 +1,21 @@
+name: Docker-compose smoke
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Start stack
+        run: docker-compose up -d --build
+      - name: Run smoke script
+        run: bash ./scripts/smoke_ci.sh
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+      - name: Tear down
+        if: always()
+        run: docker-compose down -v

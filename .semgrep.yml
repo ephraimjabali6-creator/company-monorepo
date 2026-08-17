@@ -1,0 +1,12 @@
+rules:
+  - id: hardcoded-api-key
+    patterns:
+      - pattern: "'API_KEY'"
+      - pattern: '"API_KEY"'
+    message: "Possible hardcoded API key placeholder"
+    severity: WARNING
+  - id: aws-secret
+    pattern: |-
+      "AKIA[A-Z0-9]{16}"
+    message: "AWS secret-like string"
+    severity: ERROR
