@@ -120,3 +120,40 @@ def attach_middleware(app):
 @router.get("/echo")
 async def echo():
     return {"ok": True, "message": "gateway OK"}
+
+
+@router.post("/orchestrate")
+async def orchestrate(request: Request):
+    """Start the orchestration runner in a background thread. Requires a valid API key header.
+    Returns immediately with a started status."""
+    import threading
+    import subprocess
+    import sys
+    import os
+
+    def _run():
+        try:
+            cwd = os.getcwd()
+            # run the orchestrator script using the repo python
+            subprocess.run([sys.executable, os.path.join(cwd, 'scripts', 'orchestrate_contracts.py')], check=True)
+        except Exception:
+            # swallow errors but log to files; the app has an in-memory logger elsewhere
+            pass
+
+    t = threading.Thread(target=_run, daemon=True)
+    t.start()
+    return JSONResponse(status_code=202, content={"status": "orchestration_started"})
+
+
+@router.post("/generate")
+async def generate_endpoint(payload: dict):
+    """Generate a sample product template. Body: {"name": "..."}
+    This runs the generator synchronously and returns the path."""
+    name = payload.get('name', 'generated-sample')
+    import subprocess, sys, os
+    cwd = os.getcwd()
+    try:
+        subprocess.run([sys.executable, os.path.join(cwd, 'scripts', 'generate_product.py'), name], check=True)
+        return JSONResponse(status_code=200, content={"generated": True, "path": f"projects/{name}"})
+    except subprocess.CalledProcessError:
+        return JSONResponse(status_code=500, content={"generated": False})

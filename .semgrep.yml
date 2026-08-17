@@ -10,3 +10,19 @@ rules:
       "AKIA[A-Z0-9]{16}"
     message: "AWS secret-like string"
     severity: ERROR
+  - id: subprocess-shell
+    pattern: "subprocess.run(..., shell=True)"
+    message: "Avoid subprocess with shell=True; prefer list args to avoid injection"
+    severity: ERROR
+  - id: eval-usage
+    pattern: "eval(...)"
+    message: "Use of eval can lead to remote code execution"
+    severity: ERROR
+  - id: sql-injection
+    patterns:
+      - pattern-inside: |
+          cursor.execute(SQL, params)
+      - pattern-inside: |
+          execute(f"SELECT * FROM users WHERE name = {name}")
+    message: "Potential SQL injection pattern"
+    severity: WARNING

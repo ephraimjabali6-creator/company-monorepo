@@ -12,7 +12,11 @@
       <div class="toolbar">
         <input id="baseUrl" type="text" value="http://localhost:8000" aria-label="API base URL" />
         <button id="healthBtn">Check health</button>
+        <input id="apiKey" type="password" placeholder="Gateway API key" aria-label="API key" />
+        <button id="healthBtn">Check health</button>
         <button id="planBtn">Generate plan</button>
+        <button id="orchBtn">Orchestrate</button>
+        <button id="genBtn">Generate product</button>
       </div>
     </header>
     <main>
@@ -33,6 +37,7 @@
       const briefInput = document.getElementById('brief');
       const baseUrlInput = document.getElementById('baseUrl');
       const statusBox = document.getElementById('statusBox');
+      const apiKeyInput = document.getElementById('apiKey');
       const logsEl = document.getElementById('logs');
 
       async function callHealth() {
@@ -69,7 +74,7 @@
         try {
           const response = await fetch(baseUrl + '/plan', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'x-api-key': apiKeyInput.value },
             body: JSON.stringify({
               name: 'Client Platform',
               domain: 'fintech',
@@ -86,6 +91,9 @@
             departmentsList.appendChild(li);
           }
           statusBox.textContent = 'Plan generated for ' + data.project + ' (' + data.departments.length + ' departments)';
+          // enable orchestrate and generate buttons
+          document.getElementById('orchBtn').disabled = false;
+          document.getElementById('genBtn').disabled = false;
           fetchLogs();
         } catch (err) {
           statusBox.textContent = 'Plan generation failed: ' + err.message;
@@ -94,6 +102,24 @@
 
       document.getElementById('healthBtn').addEventListener('click', callHealth);
       document.getElementById('planBtn').addEventListener('click', generatePlan);
+      document.getElementById('orchBtn').addEventListener('click', async ()=>{
+        const baseUrl = baseUrlInput.value.replace(/\/$/, '');
+        statusBox.textContent = 'Starting orchestration...';
+        try{
+          const r = await fetch(baseUrl + '/gateway/orchestrate', { method: 'POST', headers: { 'x-api-key': apiKeyInput.value } });
+          const j = await r.json();
+          statusBox.textContent = 'Orchestration: ' + (j.status || r.status);
+        }catch(e){ statusBox.textContent = 'Orchestration failed: '+ e.message }
+      });
+      document.getElementById('genBtn').addEventListener('click', async ()=>{
+        const baseUrl = baseUrlInput.value.replace(/\/$/, '');
+        statusBox.textContent = 'Generating product...';
+        try{
+          const r = await fetch(baseUrl + '/gateway/generate', { method: 'POST', headers: { 'Content-Type':'application/json','x-api-key': apiKeyInput.value }, body: JSON.stringify({ name: 'dashboard-triggered' }) });
+          const j = await r.json();
+          statusBox.textContent = 'Generate result: ' + JSON.stringify(j);
+        }catch(e){ statusBox.textContent = 'Generate failed: '+ e.message }
+      });
       callHealth();
       generatePlan();
       setInterval(fetchLogs, 5000);
